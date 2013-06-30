@@ -1,5 +1,20 @@
+'''
+CREATED: 2013-06-30 18:02:27 by Dawen Liang <dl2771@columbia.edu> 
+
+Simple implementation of GLAD algorithm proposed in:
+    Whose Vote Should Count More: Optimal Integration of Labels from Labelers of Unknown Expertise
+    by Jacob Whitehill, Paul Ruvolo, Tingfan Wu, Jacob Bergsma, and Javier Movellan
+    NIPS 2009
+
+Only binary labels are supported for now on Cal500 dataset.
+
+For HAMR 2013 (http://labrosa.ee.columbia.edu/hamr2013/)
+
+'''
+
 import numpy as np
 import scipy.optimize as optimize
+
 
 class GLAD:
     def __init__(self, Labels):
@@ -32,6 +47,9 @@ class GLAD:
 
 
     def update_theta_batch_full(self, disp):
+        '''
+        If the data has no missing label, i.e. every annotator gives annotation to every pieces, then use this, which should be faster
+        '''
         def f(theta):
             alpha, beta = theta[:self.I], np.exp(theta[-self.J:])
             tmp = logistic(np.outer(alpha, beta))
@@ -62,6 +80,9 @@ class GLAD:
 
 
     def update_theta_batch(self, disp):
+        '''
+        if not every annotation labels every piece which is more general case, then use this.
+        '''
         def df(theta):
             alpha, beta = theta[:self.I], np.exp(theta[-self.J:])
             grad_alpha = np.zeros((self.I,))
@@ -99,6 +120,8 @@ class GLAD:
             obj += np.sum((Lj * np.log(1-tmp) + (1-Lj) * np.log(tmp)) * self.EZ[1, j])
         return -obj
 
+
+### Utilities ###
 def logistic(x):
     return 1./(1 + np.exp(-x))
 
