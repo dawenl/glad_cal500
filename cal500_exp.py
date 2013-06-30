@@ -10,12 +10,13 @@ import glad_em
 
 # <codecell>
 
-%cd annotations_usr/
+%cd cal500/annotations_usr/
 files = glob.glob('*.mp3.txt')
-%cd ../
+%cd ../../
 
 # <codecell>
 
+prefix = 'cal500/annotations_usr/'
 annotator2song, annotator2id = {}, {}
 song2annotator, song2id = {}, {}
 annotator_count, song_count = 0, 0
@@ -57,7 +58,7 @@ def extract_label(label, values_p, values_n=None):
         Labels = -np.ones((annotator_count, song_count))
     for f in files:
         annotator, song = f.strip().split('-', 1)
-        data = np.loadtxt('annotations_usr/' + f, dtype='str', delimiter=' = ', skiprows=3)
+        data = np.loadtxt(prefix + f, dtype='str', delimiter=' = ', skiprows=3)
         for (k, v) in data:
             if k == label:
                 v = v.lower()
@@ -71,7 +72,7 @@ def extract_label(label, values_p, values_n=None):
 def show_values(label):
     values = []
     for f in files:
-        data = np.loadtxt('annotations_usr/' + f, dtype='str', delimiter=' = ', skiprows=3)
+        data = np.loadtxt(prefix + f, dtype='str', delimiter=' = ', skiprows=3)
         for (k, v) in data:
             if k == label:
                 v = v.lower()
@@ -100,9 +101,6 @@ def output_info(aver_acc):
     print 'None: {}: {}'.format(nlabel, none)
     pass
 
-sorted_x = sorted(x.iteritems(), key=operator.itemgetter(1))   
-sorted_x
-
 # <codecell>
 
 id2song = {}
@@ -120,14 +118,7 @@ show_values(label)
 
 # <codecell>
 
-labels = np.loadtxt('vocab.txt', dtype='str')
-
-# <codecell>
-
 ## Instrument level
-
-reload(glad_em)
-
 missing = True
 inst_aver_acc = {}
 for label in labels:
@@ -247,7 +238,4 @@ sorted_genre = sorted(genre_aver_acc.iteritems(), key=operator.itemgetter(1))
 # <codecell>
 
 sorted_genre
-
-# <codecell>
-
 
